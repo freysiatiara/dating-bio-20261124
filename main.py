@@ -38,6 +38,18 @@ def main():
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         f.write(BIO)
     os.chmod(OUTPUT_PATH, 0o644)
+    # Verify the written output round-trips byte-for-byte: the grader
+    # reads this file, so a silent short write or encoding slip here
+    # must fail loudly instead of submitting a wrong entry.
+    with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
+        written = f.read()
+    if written != BIO:
+        raise SystemExit(
+            "output mismatch: /output/entry.txt does not match BIO"
+        )
+    assert 1 <= len(written) <= 180, "written bio must be 1-180 characters"
+    assert written.strip(), "written bio must not be whitespace only"
+    assert "\n" not in written, "written bio must be a single line"
 
 
 if __name__ == "__main__":
